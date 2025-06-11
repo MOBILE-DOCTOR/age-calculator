@@ -151,6 +151,13 @@
         extraNote += `<br><strong>Pension Eligibility:</strong> On ${pensionDate.toDateString()}`;
       }
 
+      // SIM eligibility condition
+      if (years >= 18) {
+        extraNote += `<br><strong>SIM Eligibility:</strong> You are eligible to buy a SIM card.`;
+      } else {
+        extraNote += `<br><strong>SIM Eligibility:</strong> You are <span style="color:red; font-weight:bold">not eligible</span> to buy a SIM card.`;
+      }
+
       resultDiv.innerHTML = `
         <strong>You're:</strong><br>
         ${years} years<br>
