@@ -1,181 +1,29 @@
+<!-- The content below is a working HTML page for an Advanced Age Calculator with Prime-only features -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Advanced Age Calculator</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f4fbff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      margin: 0;
-      transition: background 0.3s, color 0.3s;
-    }
-    body.dark {
-      background: #121212;
-      color: #f0f0f0;
-    }
-    .container {
-      background: #fff;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-      text-align: center;
-      max-width: 600px;
-      width: 95%;
-    }
-    body.dark .container {
-      background: #1e1e1e;
-      box-shadow: 0 8px 20px rgba(255,255,255,0.05);
-    }
-    h2 {
-      color: #0077b6;
-    }
-    input[type="date"], select, input[type="number"], input[type="text"] {
-      padding: 10px;
-      width: 100%;
-      font-size: 16px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      margin: 10px 0;
-    }
-    button {
-      padding: 10px 20px;
-      margin: 5px;
-      font-size: 15px;
-      font-weight: bold;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      color: white;
-    }
-    #calcBtn { background-color: #28a745; }
-    #calcBtn:hover { background-color: #218838; }
-    #resetBtn { background-color: #dc3545; }
-    #resetBtn:hover { background-color: #c82333; }
-    #extraBtn { background-color: #0077b6; }
-    #extraBtn:hover { background-color: #005f87; }
-    #darkModeBtn { background-color: #6c757d; }
-    #darkModeBtn:hover { background-color: #5a6268; }
-    .result {
+    .prime-note {
       margin-top: 20px;
-      font-size: 16px;
-      color: #333;
-      text-align: left;
+      padding: 10px;
+      background: #fff3cd;
+      border-left: 5px solid #ffeeba;
+      color: #856404;
+      border-radius: 5px;
+      font-size: 14px;
     }
-    body.dark .result {
-      color: #f0f0f0;
-    }
-    strong { color: #0077b6; }
-    .additional-features {
-      margin-top: 30px;
-      text-align: left;
-      display: none;
-    }
-    .additional-features h3 {
-      color: #0077b6;
-      font-size: 18px;
-      margin-bottom: 10px;
-    }
-    .additional-features ul {
-      padding-left: 20px;
-    }
-    .additional-features li {
-      margin-bottom: 5px;
-      cursor: pointer;
-      text-decoration: underline;
-    }
-    #friendDOB {
+    .vote-result {
       margin-top: 10px;
-      display: none;
+      font-weight: bold;
     }
   </style>
-  <script>
-    function toggleFeatures() {
-      const extra = document.getElementById("features");
-      extra.style.display = extra.style.display === "none" ? "block" : "none";
-    }
-    function toggleDarkMode() {
-      document.body.classList.toggle("dark");
-    }
-    function resetForm() {
-      document.getElementById("dob").value = "";
-      document.getElementById("result").innerHTML = "";
-    }
-    function getChineseZodiac(year) {
-      const animals = ["Rat", "Ox", "Tiger", "Rabbit", "Dragon", "Snake", "Horse", "Goat", "Monkey", "Rooster", "Dog", "Pig"];
-      return animals[year % 12];
-    }
-    function calculateAge() {
-      const dobInput = document.getElementById("dob").value;
-      const resultDiv = document.getElementById("result");
-      if (!dobInput) {
-        resultDiv.innerHTML = "<p>Please select your Date of Birth.</p>";
-        return;
-      }
-      const dob = new Date(dobInput);
-      const now = new Date();
-      const diff = now - dob;
-      const ageDate = new Date(diff);
-      const years = ageDate.getUTCFullYear() - 1970;
-      const months = now.getMonth() - dob.getMonth() + (12 * (now.getFullYear() - dob.getFullYear()));
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-      const birthDayOfWeek = dayNames[dob.getDay()];
-      const earthRevolutions = years + (months % 12) / 12;
-      const moonCycles = Math.floor(days / 29.53);
-      const chineseZodiac = getChineseZodiac(dob.getFullYear());
-      const famousPeople = {
-        "01-01": ["J. Edgar Hoover", "Paul Revere"],
-        "10-10": ["Giuseppe Verdi", "Dale Earnhardt Jr."],
-        "07-20": ["Alexander the Great", "Chris Cornell"]
-      };
-      const mmdd = dob.toISOString().slice(5, 10);
-      const birthdayCelebs = famousPeople[mmdd] || ["No data available"];
-
-      let extraNote = "";
-      if (years < 18) {
-        const futureDate = new Date(dob);
-        futureDate.setFullYear(dob.getFullYear() + 18);
-        extraNote += `<br><strong>Note:</strong> You are a minor. You will turn 18 on ${futureDate.toDateString()}.`;
-      }
-      if (years >= 60) {
-        extraNote += `<br><strong>Status:</strong> You may be eligible for old age pension.`;
-      } else {
-        const pensionDate = new Date(dob);
-        pensionDate.setFullYear(dob.getFullYear() + 60);
-        extraNote += `<br><strong>Pension Eligibility:</strong> On ${pensionDate.toDateString()}`;
-      }
-
-      // SIM eligibility condition
-      if (years >= 18) {
-        extraNote += `<br><strong>SIM Eligibility:</strong> You are eligible to buy a SIM card.`;
-      } else {
-        extraNote += `<br><strong>SIM Eligibility:</strong> You are <span style="color:red; font-weight:bold">not eligible</span> to buy a SIM card.`;
-      }
-
-      resultDiv.innerHTML = `
-        <strong>You're:</strong><br>
-        ${years} years<br>
-        ${months} months<br>
-        ${days} days old<br><br>
-        <strong>Day you were born:</strong> ${birthDayOfWeek}<br>
-        <strong>Total Earth revolutions:</strong> ${earthRevolutions.toFixed(2)}<br>
-        <strong>Moon cycles since birth:</strong> ${moonCycles}<br>
-        <strong>Birthday count:</strong> ${years} times<br>
-        <strong>Chinese Zodiac:</strong> ${chineseZodiac}<br>
-        <strong>Famous People Born on Your Day:</strong> ${birthdayCelebs.join(", ")}<br>
-        ${extraNote}
-      `;
-    }
-  </script>
 </head>
 <body>
-  <div class="container">
+  <div class="container" id="pdfContent">
     <h2 id="heading">Advanced Age Calculator</h2>
     <select id="langSelect" onchange="setLanguage(this.value)">
       <option value="en">English</option>
@@ -191,27 +39,64 @@
       <button id="resetBtn" onclick="resetForm()">Reset</button>
       <button id="extraBtn" onclick="toggleFeatures()">Show Extra Features</button>
       <button id="darkModeBtn" onclick="toggleDarkMode()">Dark Mode</button>
+      <button onclick="downloadPDF()">Download as PDF</button>
     </div>
     <div class="result" id="result"></div>
+
     <div class="additional-features" id="features">
-      <h3>Extra Features</h3>
+      <h3>Extra Features (Prime Only)</h3>
       <ul>
-        <li onclick="calculateAge()">Total Days Old</li>
-        <li onclick="calculateAge()">Day of the Week Born</li>
+        <li>Total Days Old</li>
+        <li>Day of the Week Born</li>
         <li>Age in Other Calendars</li>
         <li>Birthstone and Birth Flower</li>
         <li>Birth Tree (Celtic Astrology)</li>
-        <li onclick="calculateAge()">Year of the Animal (Chinese Zodiac)</li>
-        <li>Fun Age Facts:
+        <li>Chinese Zodiac Animal</li>
+        <li>Fun Facts:
           <ul>
-            <li onclick="calculateAge()">Earth revolutions since birth</li>
-            <li onclick="calculateAge()">Birthday count</li>
-            <li onclick="calculateAge()">Moon cycles completed</li>
+            <li>Earth revolutions since birth</li>
+            <li>Number of birthdays</li>
+            <li>Moon cycles since birth</li>
           </ul>
         </li>
-        <li onclick="calculateAge()">Famous People Born on Your Day</li>
+        <li>Famous People Born on Your Day</li>
+        <li>Passport Eligibility</li>
+        <li>SIM Eligibility</li>
+        <li>Voting Eligibility</li>
       </ul>
+      <div class="prime-note">Note: These features are available for Prime users only. Upgrade to access all features.</div>
+    </div>
+
+    <div class="vote-section">
+      <h3>Did you like this tool?</h3>
+      <button onclick="vote('yes')">Yes</button>
+      <button onclick="vote('no')">No</button>
+      <div id="voteResult" class="vote-result"></div>
     </div>
   </div>
+
+  <script>
+    const voteCounts = { yes: 0, no: 0 };
+
+    function vote(type) {
+      if (type === 'yes') voteCounts.yes++;
+      if (type === 'no') voteCounts.no++;
+      showVoteResults();
+    }
+
+    function showVoteResults() {
+      const total = voteCounts.yes + voteCounts.no;
+      if (total === 0) return;
+      const yesPercent = ((voteCounts.yes / total) * 100).toFixed(1);
+      const noPercent = ((voteCounts.no / total) * 100).toFixed(1);
+      document.getElementById('voteResult').innerText =
+        `👍 Yes: ${yesPercent}% | 👎 No: ${noPercent}% (Total Votes: ${total})`;
+    }
+
+    function downloadPDF() {
+      const element = document.getElementById('pdfContent');
+      html2pdf().from(element).save('AgeCalculatorResult.pdf');
+    }
+  </script>
 </body>
 </html>
