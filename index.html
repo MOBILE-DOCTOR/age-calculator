@@ -1,4 +1,3 @@
-<!-- The content below is a working HTML page for an Advanced Age Calculator with Prime-only features -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,96 +6,161 @@
   <title>Advanced Age Calculator</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
-    .prime-note {
-      margin-top: 20px;
-      padding: 10px;
-      background: #fff3cd;
-      border-left: 5px solid #ffeeba;
-      color: #856404;
-      border-radius: 5px;
-      font-size: 14px;
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #e0eafc, #cfdef3);
+      color: #333;
+      padding: 20px;
     }
-    .vote-result {
+    body.dark-mode {
+      background: #121212;
+      color: #ffffff;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    body.dark-mode .container {
+      background: #1e1e1e;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+    body.dark-mode input,
+    body.dark-mode select,
+    body.dark-mode button {
+      background-color: #333;
+      color: #fff;
+      border: 1px solid #555;
+    }
+    button {
+      cursor: pointer;
+      background-color: #007bff;
+      color: white;
+      border: none;
       margin-top: 10px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    label {
       font-weight: bold;
+      display: block;
+      margin-top: 15px;
+    }
+    .login-container {
+      margin-bottom: 20px;
+      padding: 10px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    body.dark-mode .login-container {
+      background: #2a2a2a;
+    }
+    .result, .vote-result, .additional-features {
+      margin-top: 20px;
+    }
+    .vote-section {
+      margin-top: 30px;
+    }
+    ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    ul li::before {
+      content: "🔒 ";
+    }
+    h2, h3 {
+      text-align: center;
+    }
+    #moreFeaturesMessage {
+      margin-top: 30px;
+      text-align: center;
+      font-style: italic;
+      font-size: 16px;
+      color: #666;
+    }
+    #premiumFeatureList {
+      display: none;
+      margin-top: 10px;
+      padding: 10px;
+      background: #f0f0f0;
+      border-radius: 5px;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    body.dark-mode #premiumFeatureList {
+      background: #2d2d2d;
+      color: #fff;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
   </style>
 </head>
 <body>
-  <div class="container" id="pdfContent">
-    <h2 id="heading">Advanced Age Calculator</h2>
-    <select id="langSelect" onchange="setLanguage(this.value)">
-      <option value="en">English</option>
-      <option value="ta">தமிழ்</option>
-      <option value="hi">हिंदी</option>
-      <option value="te">తెలుగు</option>
-    </select>
-    <input type="date" id="dob" max="">
-    <input type="number" id="timezoneOffset" placeholder="Timezone Offset in hours (e.g. 5.5)" />
-    <input type="date" id="friendDOB" placeholder="Compare another DOB (optional)" />
-    <div>
-      <button id="calcBtn" onclick="calculateAge()">Calculate</button>
-      <button id="resetBtn" onclick="resetForm()">Reset</button>
-      <button id="extraBtn" onclick="toggleFeatures()">Show Extra Features</button>
-      <button id="darkModeBtn" onclick="toggleDarkMode()">Dark Mode</button>
-      <button onclick="downloadPDF()">Download as PDF</button>
-    </div>
-    <div class="result" id="result"></div>
+  <div class="container">
+    <h2>Advanced Age Calculator</h2>
 
-    <div class="additional-features" id="features">
-      <h3>Extra Features (Prime Only)</h3>
-      <ul>
-        <li>Total Days Old</li>
-        <li>Day of the Week Born</li>
-        <li>Age in Other Calendars</li>
-        <li>Birthstone and Birth Flower</li>
-        <li>Birth Tree (Celtic Astrology)</li>
-        <li>Chinese Zodiac Animal</li>
-        <li>Fun Facts:
-          <ul>
-            <li>Earth revolutions since birth</li>
-            <li>Number of birthdays</li>
-            <li>Moon cycles since birth</li>
-          </ul>
-        </li>
-        <li>Famous People Born on Your Day</li>
-        <li>Passport Eligibility</li>
-        <li>SIM Eligibility</li>
-        <li>Voting Eligibility</li>
-      </ul>
-      <div class="prime-note">Note: These features are available for Prime users only. Upgrade to access all features.</div>
+    <div class="login-container">
+      <label for="username">Username</label>
+      <input type="text" id="username" placeholder="Enter username" />
+      <label for="password">Password</label>
+      <input type="password" id="password" placeholder="Enter password" />
+      <button onclick="login()">Login</button>
     </div>
 
-    <div class="vote-section">
-      <h3>Did you like this tool?</h3>
-      <button onclick="vote('yes')">Yes</button>
-      <button onclick="vote('no')">No</button>
-      <div id="voteResult" class="vote-result"></div>
+    <label for="dob">Date of Birth</label>
+    <input type="date" id="dob" />
+
+    <label for="compareDate">Compare with Date (leave blank to use today)</label>
+    <input type="date" id="compareDate" />
+
+    <button onclick="calculateAge()">Calculate</button>
+    <button onclick="resetCalculator()">Reset</button>
+    <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
+    <button onclick="generatePDF()">Download PDF</button>
+
+    <div class="result" id="resultArea"></div>
+    <div class="additional-features" id="additionalFeatures"></div>
+    <div id="moreFeaturesMessage">
+      ✨ More features will appear after login...<br>
+      <button onclick="togglePremiumFeatureList()">View Premium Features</button>
+      <div id="premiumFeatureList">
+        <ul>
+          <li>Total Days Old</li>
+          <li>Day of the Week Born</li>
+          <li>Age in Other Calendars</li>
+          <li>Birthstone and Birth Flower</li>
+          <li>Birth Tree (Celtic Astrology)</li>
+          <li>Chinese Zodiac Animal</li>
+          <li>Fun Facts: Earth Revolutions, Moon Cycles, Birthdays</li>
+          <li>Famous People Born on Your Day</li>
+          <li>Passport, SIM, Voting Eligibility Check</li>
+          <li>Multiple Profiles / Family Management</li>
+          <li>Backup & Restore, Share Functionality</li>
+        </ul>
+      </div>
     </div>
   </div>
 
   <script>
-    const voteCounts = { yes: 0, no: 0 };
-
-    function vote(type) {
-      if (type === 'yes') voteCounts.yes++;
-      if (type === 'no') voteCounts.no++;
-      showVoteResults();
-    }
-
-    function showVoteResults() {
-      const total = voteCounts.yes + voteCounts.no;
-      if (total === 0) return;
-      const yesPercent = ((voteCounts.yes / total) * 100).toFixed(1);
-      const noPercent = ((voteCounts.no / total) * 100).toFixed(1);
-      document.getElementById('voteResult').innerText =
-        `👍 Yes: ${yesPercent}% | 👎 No: ${noPercent}% (Total Votes: ${total})`;
-    }
-
-    function downloadPDF() {
-      const element = document.getElementById('pdfContent');
-      html2pdf().from(element).save('AgeCalculatorResult.pdf');
+    function togglePremiumFeatureList() {
+      const list = document.getElementById('premiumFeatureList');
+      list.style.display = list.style.display === 'none' ? 'block' : 'none';
     }
   </script>
+  <script src="script.js"></script>
 </body>
 </html>

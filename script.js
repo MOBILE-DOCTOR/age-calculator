@@ -1,85 +1,83 @@
-document.getElementById("dob").max = new Date().toISOString().split("T")[0];
+// script.js - Advanced Age Calculator JS
+
+let isLoggedIn = false;
+let currentUser = "";
+const admin = { username: "admin", password: "admin123" };
+const user = { username: "user", password: "user123" };
+
+function login() {
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value.trim();
+  if ((username === admin.username && password === admin.password) ||
+      (username === user.username && password === user.password)) {
+    isLoggedIn = true;
+    currentUser = username;
+    alert("Login successful as " + username);
+    document.querySelector(".login-container").classList.add("hidden");
+    document.getElementById("moreFeaturesMessage").innerHTML =
+      "✨ More features will appear after calculation...";
+  } else {
+    alert("Invalid credentials");
+  }
+}
 
 function calculateAge() {
-  const dob = new Date(document.getElementById("dob").value);
-  if (!dob) return;
+  const dob = document.getElementById("dob").value;
+  const compareDate = document.getElementById("compareDate").value || new Date().toISOString().split("T")[0];
+  if (!dob) return alert("Please enter your Date of Birth");
 
-  const today = new Date();
-  let years = today.getFullYear() - dob.getFullYear();
-  let months = today.getMonth() - dob.getMonth();
-  let days = today.getDate() - dob.getDate();
+  const birth = new Date(dob);
+  const compare = new Date(compareDate);
+  const now = new Date();
+  if (birth > compare) return alert("Date of Birth must be before compare date!");
 
-  if (days < 0) {
-    months--;
-    days += new Date(today.getFullYear(), today.getMonth(), 0).getDate();
-  }
+  const ageDate = new Date(compare - birth);
+  const years = compare.getFullYear() - birth.getFullYear();
+  const months = ageDate.getMonth();
+  const days = ageDate.getDate() - 1;
 
-  if (months < 0) {
-    years--;
-    months += 12;
-  }
+  const totalDaysOld = Math.floor((compare - birth) / (1000 * 60 * 60 * 24));
+  const dayOfWeekBorn = birth.toLocaleString('en-US', { weekday: 'long' });
 
-  const totalDays = Math.floor((today - dob) / (1000 * 60 * 60 * 24));
-  const dayBorn = dob.toLocaleDateString('en', { weekday: 'long' });
+  const results = `
+    <h3>Age Result</h3>
+    <p>🎂 You are ${years} years, ${months} months, and ${days} days old.</p>
+    <p>📅 Total Days Old: ${totalDaysOld}</p>
+    <p>📆 You were born on a: ${dayOfWeekBorn}</p>
+  `;
+  document.getElementById("resultArea").innerHTML = results;
 
-  const result = document.getElementById("result");
-  result.innerHTML = `
-    <h3>Your Age</h3>
-    <p>${years} Years, ${months} Months, ${days} Days</p>
-    <p><strong>Total Days Old:</strong> ${totalDays}</p>
-    <p><strong>Day of the Week Born:</strong> ${dayBorn}</p>
-    <p><strong>Voting Eligibility:</strong> ${years >= 18 ? '✅ Eligible' : '❌ Not Eligible'}</p>
-    <p><strong>SIM Eligibility:</strong> ${years >= 18 ? '✅ Eligible' : '❌ Not Eligible'}</p>
-    <p><strong>Passport:</strong> ✅ Eligible to Apply</p>
+  document.getElementById("additionalFeatures").innerHTML = `
+    <h3>✨ More Features</h3>
+    <ul>
+      <li>🗓️ Age in Other Calendars: (Coming soon)</li>
+      <li>💎 Birthstone: Garnet</li>
+      <li>🌸 Birth Flower: Carnation</li>
+      <li>🌳 Celtic Tree Sign: Birch</li>
+      <li>🐉 Chinese Zodiac Animal: Dragon</li>
+      <li>🌍 Earth Revolutions: ${years}</li>
+      <li>🎂 Birthdays Celebrated: ${years}</li>
+      <li>🌕 Moon Cycles: ~${Math.floor(totalDaysOld / 29.53)}</li>
+      <li>🌟 Famous People Born Today: Coming Soon</li>
+      <li>🛂 Passport Eligibility: ${years >= 18 ? "Eligible" : "Not Eligible"}</li>
+      <li>📞 SIM Eligibility: ${years >= 18 ? "Eligible" : "Not Eligible"}</li>
+      <li>🗳️ Voting Eligibility: ${years >= 18 ? "Eligible" : "Not Eligible"}</li>
+    </ul>
   `;
 }
 
-function toggleFeatures() {
-  const features = document.getElementById("features");
-  features.style.display = features.style.display === "block" ? "none" : "block";
-}
-
-function resetForm() {
+function resetCalculator() {
   document.getElementById("dob").value = "";
-  document.getElementById("result").innerHTML = "";
-  document.getElementById("features").style.display = "none";
+  document.getElementById("compareDate").value = "";
+  document.getElementById("resultArea").innerHTML = "";
+  document.getElementById("additionalFeatures").innerHTML = "";
 }
 
 function toggleDarkMode() {
   document.body.classList.toggle("dark-mode");
 }
 
-function setLanguage(lang) {
-  const heading = document.getElementById("heading");
-  const translations = {
-    en: "Advanced Age Calculator",
-    ta: "மேம்பட்ட வயது கணக்கீடு",
-    hi: "उन्नत आयु कैलकुलेटर",
-    te: "అధునాతన వయస్సు క్యాలిక్యులేటర్"
-  };
-  heading.innerText = translations[lang] || translations.en;
-}
-
-// Voting Logic
-const voteCounts = { yes: 0, no: 0 };
-
-function vote(type) {
-  if (type === 'yes') voteCounts.yes++;
-  if (type === 'no') voteCounts.no++;
-  showVoteResults();
-}
-
-function showVoteResults() {
-  const total = voteCounts.yes + voteCounts.no;
-  if (total === 0) return;
-  const yesPercent = ((voteCounts.yes / total) * 100).toFixed(1);
-  const noPercent = ((voteCounts.no / total) * 100).toFixed(1);
-  document.getElementById('voteResult').innerText =
-    `👍 Yes: ${yesPercent}% | 👎 No: ${noPercent}% (Total Votes: ${total})`;
-}
-
-// PDF Download
-function downloadPDF() {
-  const element = document.getElementById('pdfContent');
-  html2pdf().from(element).save('AgeCalculatorResult.pdf');
+function generatePDF() {
+  const element = document.querySelector(".container");
+  html2pdf().from(element).save("AgeDetails.pdf");
 }
