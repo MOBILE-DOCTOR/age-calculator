@@ -28,13 +28,22 @@ function calculateAge() {
 
   const birth = new Date(dob);
   const compare = new Date(compareDate);
-  const now = new Date();
   if (birth > compare) return alert("Date of Birth must be before compare date!");
 
-  const ageDate = new Date(compare - birth);
-  const years = compare.getFullYear() - birth.getFullYear();
-  const months = ageDate.getMonth();
-  const days = ageDate.getDate() - 1;
+  let years = compare.getFullYear() - birth.getFullYear();
+  let months = compare.getMonth() - birth.getMonth();
+  let days = compare.getDate() - birth.getDate();
+
+  if (days < 0) {
+    months--;
+    const prevMonth = new Date(compare.getFullYear(), compare.getMonth(), 0);
+    days += prevMonth.getDate();
+  }
+
+  if (months < 0) {
+    years--;
+    months += 12;
+  }
 
   const totalDaysOld = Math.floor((compare - birth) / (1000 * 60 * 60 * 24));
   const dayOfWeekBorn = birth.toLocaleString('en-US', { weekday: 'long' });
