@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="manifest" href="manifest.json" />
+  <title>Age Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f8ff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      text-align: center;
+      width: 90%;
+      max-width: 400px;
+    }
+    input[type="date"] {
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      margin: 10px 0;
+      width: 100%;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+    #resetBtn {
+      background-color: #dc3545;
+    }
+    #resetBtn:hover {
+      background-color: #c82333;
+    }
+    .result {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #333;
+      min-height: 24px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Age Calculator</h2>
+    <input type="date" id="dob" max="">
+    <br />
+    <button onclick="calculateAge()">Calculate</button>
+    <button id="resetBtn" onclick="resetForm()">Reset</button>
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+    // Set max date to today
+    document.getElementById("dob").max = new Date().toISOString().split("T")[0];
+
+    function calculateAge() {
+      const dob = document.getElementById("dob").value;
+      const result = document.getElementById("result");
+
+      if (!dob) {
+        result.innerText = "⚠️ Please select your date of birth.";
+        return;
+      }
+
+      const birthDate = new Date(dob);
+      const today = new Date();
+
+      if (birthDate > today) {
+        result.innerText = "⚠️ Date of birth cannot be in the future.";
+        return;
+      }
+
+      let years = today.getFullYear() - birthDate.getFullYear();
+      let months = today.getMonth() - birthDate.getMonth();
+      let days = today.getDate() - birthDate.getDate();
+
+      if (days < 0) {
+        months--;
+        days += new Date(today.getFullYear(), today.getMonth(), 0).getDate();
+      }
+
+      if (months < 0) {
+        years--;
+        months += 12;
+      }
+
+      result.innerHTML = `🎉 You are <strong>${years}</strong> years, <strong>${months}</strong> months, and <strong>${days}</strong> days old.`;
+    }
+
+    function resetForm() {
+      document.getElementById("dob").value = "";
+      document.getElementById("result").innerText = "";
+    }
+
+    // Register service worker for PWA support
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js');
+    }
+  </script>
+</body>
+</html>
